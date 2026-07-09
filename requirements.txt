@@ -7,3 +7,4 @@ pandas
 shapely
 pyproj
 fiona
+pyogrio
