@@ -23,8 +23,8 @@ st.markdown("### Áreas con mayor presencia de incendios forestales")
 @st.cache_data
 def cargar_datos():
     # NOTA: Se recomienda quitar tildes a los archivos en GitHub si esto falla
-    reserva = gpd.read_file(r"C:\Users\rafit\OneDrive\Desktop\Material Estudio\Aplicaciones SIG\Semana_15-20260702T181121Z-3-001\Semana_15\datosapp\area_reserva_calakmul.gpkg")
-    incendios = gpd.read_file(r"C:\Users\rafit\OneDrive\Desktop\Material Estudio\Aplicaciones SIG\Semana_15-20260702T181121Z-3-001\Semana_15\datosapp\areas_con_mayor_presencia_de_incendios.gpkg")
+    reserva = gpd.read_file(r"C:\Users\rafit\OneDrive\Desktop\Material Estudio\Aplicaciones SIG\Semana_15-20260702T181121Z-3-001\Semana_15\datosapp\área_reserva_calakmul.geojson")
+    incendios = gpd.read_file(r"C:\Users\rafit\OneDrive\Desktop\Material Estudio\Aplicaciones SIG\Semana_15-20260702T181121Z-3-001\Semana_15\datosapp\áreas_con_mayor_presencia_de_incendios.geojson")
     
     # Asegurar que los datos originales tengan asignado WGS84 para el mapa
     if reserva.crs is None:
