@@ -22,11 +22,11 @@ st.markdown("### Áreas con mayor presencia de incendios forestales")
 
 @st.cache_data
 def cargar_datos():
-    # NOTA: Se recomienda quitar tildes a los archivos en GitHub si esto falla
-    reserva = gpd.read_file(r"C:\Users\rafit\OneDrive\Desktop\Material Estudio\Aplicaciones SIG\Semana_15-20260702T181121Z-3-001\Semana_15\datosapp\área_reserva_calakmul.geojson")
-    incendios = gpd.read_file(r"C:\Users\rafit\OneDrive\Desktop\Material Estudio\Aplicaciones SIG\Semana_15-20260702T181121Z-3-001\Semana_15\datosapp\áreas_con_mayor_presencia_de_incendios.geojson")
+    # Rutas relativas en minúsculas, sin acentos ni caracteres especiales
+    reserva = gpd.read_file("datosapp/area_reserva_calakmul.geojson")
+    incendios = gpd.read_file("datosapp/areas_con_mayor_presencia_de_incendios.geojson")
     
-    # Asegurar que los datos originales tengan asignado WGS84 para el mapa
+    # Asegurar que los datos tengan asignado o transformado el CRS WGS84 (EPSG:3857)
     if reserva.crs is None:
         reserva.set_crs("EPSG:3857", inplace=True)
     else:
@@ -74,7 +74,6 @@ mostrar_incendios = st.sidebar.checkbox("Áreas con incendios", True)
 mapa = leafmap.Map()
 mapa.add_basemap("SATELLITE")
 
-# Pasamos las capas aseguradas en EPSG:3857 para evitar errores de proyección
 if mostrar_reserva:
     mapa.add_gdf(
         reserva,
