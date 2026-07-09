@@ -28,14 +28,14 @@ def cargar_datos():
     
     # Asegurar que los datos originales tengan asignado WGS84 para el mapa
     if reserva.crs is None:
-        reserva.set_crs("EPSG:4326", inplace=True)
+        reserva.set_crs("EPSG:3857", inplace=True)
     else:
-        reserva = reserva.to_crs("EPSG:4326")
+        reserva = reserva.to_crs("EPSG:3857")
         
     if incendios.crs is None:
-        incendios.set_crs("EPSG:4326", inplace=True)
+        incendios.set_crs("EPSG:3857", inplace=True)
     else:
-        incendios = incendios.to_crs("EPSG:4326")
+        incendios = incendios.to_crs("EPSG:3857")
         
     return reserva, incendios
 
@@ -46,8 +46,8 @@ reserva, incendios = cargar_datos()
 # =====================================================
 
 # UTM Zona 16N (Calakmul)
-reserva_utm = reserva.to_crs("EPSG:32616")
-incendios_utm = incendios.to_crs("EPSG:32616")
+reserva_utm = reserva.to_crs("EPSG:3857")
+incendios_utm = incendios.to_crs("EPSG:3857")
 
 # Área de la reserva (m² a ha)
 area_reserva = reserva_utm.area.sum() / 10000
@@ -74,7 +74,7 @@ mostrar_incendios = st.sidebar.checkbox("Áreas con incendios", True)
 mapa = leafmap.Map()
 mapa.add_basemap("SATELLITE")
 
-# Pasamos las capas aseguradas en EPSG:4326 para evitar errores de proyección
+# Pasamos las capas aseguradas en EPSG:3857 para evitar errores de proyección
 if mostrar_reserva:
     mapa.add_gdf(
         reserva,
