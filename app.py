@@ -24,11 +24,11 @@ st.markdown("### Áreas con mayor presencia de incendios forestales")
 def cargar_datos():
 
     reserva = gpd.read_file(
-        "data/área_reserva_calakmul.geojson"
+        "data/zona reserva calakmul.gpkg"
     )
 
     incendios = gpd.read_file(
-        "data/áreas_con_mayor_presencia_de_incendios.geojson"
+        "data/areas con más incendios.gpkg"
     )
 
     return reserva, incendios
@@ -37,7 +37,19 @@ def cargar_datos():
 reserva, incendios = cargar_datos()
 
 # =====================================================
-# Convertir a UTM para calcular áreas
+# Verificar sistema de referencia
+# =====================================================
+
+if reserva.crs is None:
+    st.error("La capa de la reserva no tiene un sistema de coordenadas.")
+    st.stop()
+
+if incendios.crs is None:
+    st.error("La capa de incendios no tiene un sistema de coordenadas.")
+    st.stop()
+
+# =====================================================
+# Calcular áreas
 # =====================================================
 
 # UTM Zona 16N (Calakmul)
@@ -62,12 +74,12 @@ st.sidebar.title("Capas")
 
 mostrar_reserva = st.sidebar.checkbox(
     "Reserva de la Biosfera",
-    True
+    value=True
 )
 
 mostrar_incendios = st.sidebar.checkbox(
     "Áreas con incendios",
-    True
+    value=True
 )
 
 # =====================================================
@@ -81,18 +93,29 @@ mapa.add_basemap("SATELLITE")
 if mostrar_reserva:
 
     mapa.add_gdf(
-        reserva,
-        layer_name="Reserva de la Biosfera"
+        reserva.to_crs(4326),
+        layer_name="Reserva de la Biosfera",
+        style={
+            "color": "green",
+            "fillOpacity": 0.05,
+            "weight": 2
+        }
     )
 
 if mostrar_incendios:
 
     mapa.add_gdf(
-        incendios,
-        layer_name="Áreas con incendios"
+        incendios.to_crs(4326),
+        layer_name="Áreas con incendios",
+        style={
+            "color": "red",
+            "fillColor": "red",
+            "fillOpacity": 0.6,
+            "weight": 1
+        }
     )
 
-mapa.zoom_to_gdf(reserva)
+mapa.zoom_to_gdf(reserva.to_crs(4326))
 
 mapa.to_streamlit(height=700)
 
@@ -100,12 +123,12 @@ mapa.to_streamlit(height=700)
 # Indicadores
 # =====================================================
 
-st.header("Indicadores")
+st.header("📊 Indicadores")
 
 c1, c2, c3 = st.columns(3)
 
 c1.metric(
-    "Número de polígonos",
+    "Polígonos de incendios",
     len(incendios)
 )
 
@@ -116,14 +139,14 @@ c2.metric(
 
 c3.metric(
     "% de la reserva afectada",
-    f"{porcentaje:.2f}"
+    f"{porcentaje:.2f}%"
 )
 
 # =====================================================
 # Gráfico
 # =====================================================
 
-st.header("Área por polígono")
+st.header("Área de cada polígono")
 
 incendios_utm["Polígono"] = range(
     1,
@@ -135,6 +158,10 @@ fig = px.bar(
     x="Polígono",
     y="Área (ha)",
     color="Área (ha)",
+    labels={
+        "Polígono": "Polígono",
+        "Área (ha)": "Área (ha)"
+    },
     title="Área de cada polígono de incendio"
 )
 
@@ -144,7 +171,7 @@ st.plotly_chart(
 )
 
 # =====================================================
-# Tabla
+# Tabla de atributos
 # =====================================================
 
 st.header("Tabla de atributos")
